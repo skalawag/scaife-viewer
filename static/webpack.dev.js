@@ -17,7 +17,7 @@ module.exports = merge(common, {
   module: {
     rules: utils.styleLoaders({ sourceMap: true }),
   },
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-source-map',
   devServer: {
     port: 3000,
     proxy: {
@@ -33,7 +33,6 @@ module.exports = merge(common, {
     },
   },
   plugins: [
-    new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     ...optionalPlugins,
   ],

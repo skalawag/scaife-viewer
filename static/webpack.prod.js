@@ -10,19 +10,13 @@ const env = {
 const extractCss = new ExtractTextPlugin('css/app.css');
 
 module.exports = merge(common, {
-  devtool: '#source-map',
+  devtool: 'hidden-source-map',
   module: {
     rules: utils.styleLoaders({ extracter: extractCss }),
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': env,
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-      },
-      sourceMap: true,
     }),
     extractCss,
   ],
