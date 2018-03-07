@@ -1,7 +1,5 @@
 import os
 
-from django.utils.translation import ugettext_lazy as _
-
 import dj_database_url
 
 
@@ -10,6 +8,7 @@ PACKAGE_ROOT = os.path.abspath(os.path.dirname(__file__))
 BASE_DIR = PACKAGE_ROOT
 
 DEBUG = bool(int(os.environ.get("DEBUG", "1")))
+TRACING_ENABLED = bool(int(os.environ.get("TRACING_ENABLED", not DEBUG)))
 
 DATABASES = {
     "default": dj_database_url.config(default="postgres://localhost/scaife-viewer")
@@ -118,18 +117,25 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE = [
-    "scaife_viewer.tracing.OpenTracingMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "account.middleware.LocaleMiddleware",
+    "scaife_viewer.middleware.PerRequestMiddleware",
 ]
+if TRACING_ENABLED:
+    MIDDLEWARE.append("opencensus.trace.ext.django.middleware.OpencensusMiddleware")
+
+PER_REQUEST_MIDDLEWARE = {
+    "default": [
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "django.middleware.clickjacking.XFrameOptionsMiddleware",
+        "account.middleware.LocaleMiddleware",
+    ],
+    "api": [],
+}
 
 ROOT_URLCONF = "scaife_viewer.urls"
 
@@ -155,6 +161,7 @@ INSTALLED_APPS = [
     "pinax.webanalytics",
     "raven.contrib.django.raven_compat",
     "oidc_provider",
+    "opencensus.trace.ext.django",
 
     # project
     "scaife_viewer",
@@ -268,5 +275,13 @@ if "SENTRY_DSN" in os.environ:
         "dsn": os.environ["SENTRY_DSN"],
     }
 
-TRACING_ENABLED = bool(int(os.environ.get("TRACING_ENABLED", not DEBUG)))
+OPENCENSUS_TRACE = {
+    "SAMPLER": "opencensus.trace.samplers.AlwaysOnSampler",
+    "EXPORTER": "scaife_viewer.tracing.StackdriverExporter",
+    "PROPAGATOR": "opencensus.trace.propagation.google_cloud_format.GoogleCloudFormatPropagator",
+}
+OPENCENSUS_TRACE_PARAMS = {
+    "BLACKLIST_PATHS": [],
+}
+
 ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")

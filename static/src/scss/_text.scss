@@ -1,5 +1,5 @@
 div.text {
-  font-family: 'Noto Serif';
+  font-family: 'Noto Serif', 'Noto Sans Coptic';
 }
 
 
@@ -37,14 +37,13 @@ div.text {
   .lang_heb span.w::before {
     content:" ";
   }
-
-  .note > .note-content {
-    display: none;
+  .lang_cop span.phr::before {
+    content:" ";
   }
-  .note:hover > .note-content {
-    display: inline;
-    font-style: italic;
+
+  .note {
     color: $gray-600;
+    cursor: pointer;
   }
 
   .lang_far .poem > .b {
@@ -109,6 +108,7 @@ div.text {
   }
   .placeName {
     color: $gray-600;
+    cursor: pointer;
   }
   .said .label, .speaker {
     font-weight: bold;

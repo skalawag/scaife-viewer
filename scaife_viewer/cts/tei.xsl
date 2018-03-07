@@ -4,7 +4,8 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:t="http://www.tei-c.org/ns/1.0"
   xmlns:py="urn:python-funcs"
-  exclude-result-prefixes="t py">
+  xmlns:v-popover="v-popover"
+  exclude-result-prefixes="t py v-popover">
 
   <!-- this all comes from https://github.com/PerseusDL/perseus_nemo_ui/tree/master/perseus_nemo_ui/data/assets/static/xslt -->
 
@@ -219,6 +220,13 @@
     </xsl:element>
   </xsl:template>
 
+  <xsl:template match="t:phr">
+    <xsl:element name="span">
+      <xsl:attribute name="class">phr</xsl:attribute>
+      <xsl:apply-templates/>
+    </xsl:element>
+  </xsl:template>
+
   <xsl:template match="t:quote">
     <xsl:element name="blockquote">
       <xsl:apply-templates/>
@@ -282,8 +290,19 @@
     </xsl:for-each>
   </xsl:template>
 
-  <xsl:template match="t:name/t:reg"></xsl:template>
-  <xsl:template match="t:name/t:placeName"><span class="placeName"><xsl:apply-templates/></span></xsl:template>
+  <xsl:template match="t:name[not(t:placeName)]">
+    <span class="name"><xsl:value-of select="."/></span>
+  </xsl:template>
+
+  <xsl:template match="t:name[t:placeName]">
+    <a>
+      <xsl:attribute name="class">placeName</xsl:attribute>
+      <xsl:attribute name="v-popover:bottom">
+        {content: `<xsl:value-of select="t:reg"/>`, trigger: 'click'}
+      </xsl:attribute>
+      <xsl:value-of select="t:placeName"/>
+    </a>
+  </xsl:template>
 
   <xsl:template match="t:lb">
     <br/>
@@ -372,7 +391,13 @@
   </xsl:template>
 
   <xsl:template match="t:note">
-    <span class="note"><a href="#">[*]</a><span class="note-content"><xsl:text>(</xsl:text><xsl:value-of select="." /><xsl:text>)</xsl:text></span></span>
+    <a>
+      <xsl:attribute name="class">note</xsl:attribute>
+      <xsl:attribute name="v-popover:bottom">
+        {content: `<xsl:apply-templates/>`, trigger: 'click'}
+      </xsl:attribute>
+      <xsl:text>[*]</xsl:text>
+    </a>
   </xsl:template>
 
   <xsl:template match="t:choice">

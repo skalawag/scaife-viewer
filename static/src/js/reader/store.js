@@ -63,6 +63,7 @@ module.exports = {
     highlight: null,
     annotations: new Map(),
     annotationChange: 0,
+    selectedLemmas: null,
     error: '',
     selectedTokenRange: { start: null, end: null },
   },
@@ -72,6 +73,17 @@ module.exports = {
     },
     passage(state) {
       return state.leftPassage;
+    },
+    selectedWords(state) {
+      const words = [];
+      const { annotations, annotationChange } = state;
+      annotations.forEach((o, token) => {
+        if (o.selected) {
+          const [, w, i] = /^([^[]+)(?:\[(\d+)\])?$/.exec(token);
+          words.push({ w, i });
+        }
+      });
+      return words;
     },
   },
   mutations: {
@@ -174,6 +186,9 @@ module.exports = {
         state.selectedTokenRange.end = end;
       }
     },
+    setSelectedLemmas(state, { lemmas }) {
+      state.selectedLemmas = lemmas;
+    },
     setError(state, { error }) {
       state.error = error;
     },
@@ -273,6 +288,9 @@ module.exports = {
     highlight({ commit, state, rootState }, { highlight, route = true }) {
       let { query } = rootState.route;
       if (highlight !== null) {
+        if (state.mode !== 'clickable') {
+          commit('setTextMode', { mode: 'clickable' });
+        }
         let singleton = false;
         const selectedTokens = [];
         if (highlight.indexOf('@') === -1) {

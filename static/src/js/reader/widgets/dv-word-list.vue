@@ -5,7 +5,7 @@
       <p class="legend">Number in parentheses is frequency per 10k in this work.</p>
     </div>
     <div slot="body">
-      <p v-for="word in wordList" :key="word.text">
+      <p v-for="word in wordList" :key="word.text" v-if="!selectedLemmas || selectedLemmas.indexOf(word.text) !== -1">
         <span class="w">{{ word.text }}</span>
         <span class="df">{{ word.shortdef }}</span>
         <span class="fr">({{ word.frequency }})</span>
@@ -24,6 +24,9 @@ export default {
     passage() {
       return this.$store.getters['reader/passage'];
     },
+    selectedLemmas() {
+      return this.$store.state.reader.selectedLemmas;
+    },
   },
   data() {
     return {
@@ -31,11 +34,11 @@ export default {
       wordList: [],
     };
   },
-  mounted() {
-    this.fetchWordList();
-  },
   watch: {
-    passage: 'fetchWordList',
+    passage: {
+      handler: 'fetchWordList',
+      immediate: true,
+    },
   },
   methods: {
     async fetchWordList() {
