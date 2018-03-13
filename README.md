@@ -1,5 +1,9 @@
 # Scaife Digital Library Viewer
 
+The Scaife Viewer is the new reading environment for the Perseus Digital Library.
+
+See [Ways to Contribute](https://github.com/scaife-viewer/scaife-viewer/wiki/Ways-to-Contribute).
+
 ## Getting Started
 
 Requirements:
@@ -33,7 +37,7 @@ Setup the database:
 
 Seed the text inventory to speed up local development:
 
-    curl -s "https://scaife-cts-dev.eldarion.com/api/cts?request=GetCapabilities" > ti.xml
+    curl -s "https://scaife-cts-dev.perseus.org/api/cts?request=GetCapabilities" > ti.xml
 
 You should now be set to run the development server:
 
@@ -41,7 +45,7 @@ You should now be set to run the development server:
 
 Browse to http://localhost:3000/.
 
-Note that, although running Scaife locally, this is relying on the Nautilus server at https://scaife-cts-dev.eldarion.com to retrieve texts.
+Note that, although running Scaife locally, this is relying on the Nautilus server at https://scaife-cts-dev.perseus.org to retrieve texts.
 
 
 ## Translations

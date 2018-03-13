@@ -1,11 +1,11 @@
 body.reader {
+
   .passage-heading {
     margin-bottom: 20px;
     font-family: 'Noto Serif';
     color: $gray-600;
     h1 {
       margin: 0;
-      font-size: 24px;
       font-weight: normal;
       a {
         color: inherit;
@@ -13,15 +13,38 @@ body.reader {
     }
     h2 {
       margin: 0;
-      font-size: 16px;
-      line-height: 24px;
       font-weight: normal;
       font-style: italic;
     }
     h3 {
+      color: $gray-500;
+    }
+  }
+
+  @include media-breakpoint-up(sm) {
+    h1 {
+      font-size: 24px;
+    }
+    h2 {
+      font-size: 16px;
+      line-height: 24px;
+    }
+    h3 {
       font-size: 14px;
       line-height: 18px;
-      color: $gray-500;
+    }
+  }
+  @include media-breakpoint-down(sm) {
+    h1 {
+      font-size: 18px;
+    }
+    h2 {
+      font-size: 14px;
+      line-height: 20px;
+    }
+    h3 {
+      font-size: 12px;
+      line-height: 14px;
     }
   }
 
@@ -82,6 +105,7 @@ body.reader {
 
   .btn-group.btn-group-left {
     margin-bottom: 10px;
+    width: 100%;
   }
   .btn-group.btn-group-left .dropdown-toggle {
     padding: 0.2rem 0.5rem 0.2rem 0.3rem !important;
@@ -97,6 +121,7 @@ body.reader {
   }
 
   .version-select {
+    // width: 100%;
     padding: 0.5rem 0.75rem 0.5rem 0;
     text-align: left;
     white-space: normal;
@@ -108,11 +133,14 @@ body.reader {
       font-family: 'Noto Sans';
       color: $gray-500;
       font-style: italic;
+      margin-top: 4px;
       font-size: 12px;
       line-height: 12px;
     }
   }
   .version-option {
+    width: 100%;
+    max-width: 500px;
     a {
       white-space: normal;
       padding: 0.25rem 1rem;
@@ -121,22 +149,43 @@ body.reader {
           color: $perseus-red-lighter;
         }
       }
+      &:hover {
+      }
       &.remove {
+        padding: 0 1rem;
+        font-size: 14px;
         color: $red;
         &:active {
           color: $white;
         }
       }
+      display: flex;
+      .side {
+        @extend .badge;
+        font-family: 'Noto Sans';
+        color: $gray-600;
+        background: $gray-200;
+        margin-right: 0.5em;
+      }
     }
-    font-size: 14px;
-    line-height: 16px;
-    font-family: 'Noto Serif';
-    .metadata {
+    .label {
+      font-family: 'Noto Serif';
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 16px;
+    }
+    .description {
       font-family: 'Noto Sans';
       color: $gray-600;
+      font-size: 12px;
+      line-height: 14px;
+    }
+    .metadata {
+      font-family: 'Noto Serif';
+      color: $gray-800;
       font-style: italic;
       font-size: 12px;
-      line-height: 12px;
+      line-height: 14px;
     }
   }
   .text-loading:not(.partial-loader) {
@@ -149,4 +198,11 @@ body.reader {
     opacity: 1;
     transition: opacity 0.2s;
   }
+}
+
+.passage-redirect-alert {
+  @extend .alert;
+  @extend .alert-info;
+  @extend .text-info;
+  background: none;  // might consider doing this for all alerts
 }

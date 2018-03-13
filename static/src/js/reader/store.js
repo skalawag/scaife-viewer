@@ -19,7 +19,7 @@ function copyText(text, { urn, metadata }) {
   return newText;
 }
 
-function copyPassage(passage, { urn, metadata, ready, error }) {
+function copyPassage(passage, { urn, metadata, ready, error, redirected }) {
   let newPassage;
   if (passage === null) {
     newPassage = {
@@ -27,6 +27,7 @@ function copyPassage(passage, { urn, metadata, ready, error }) {
       metadata: null,
       ready: false,
       error: '',
+      redirected: null,
     };
   } else {
     newPassage = { ...passage };
@@ -42,6 +43,9 @@ function copyPassage(passage, { urn, metadata, ready, error }) {
   }
   if (error !== undefined) {
     newPassage.error = error;
+  }
+  if (redirected !== undefined) {
+    newPassage.redirected = redirected;
   }
   return newPassage;
 }
@@ -211,44 +215,84 @@ module.exports = {
       }
       const leftTextUrn = leftUrn.upTo('version');
       if (!state.leftText || state.leftText.urn.toString() !== leftTextUrn) {
-        ps.push(sv.fetchCollection(leftTextUrn).then((text) => {
-          commit('setLeftText', { urn: leftTextUrn, metadata: text });
-        }));
+        ps.push(sv.fetchCollection(leftTextUrn)
+          .then((text) => {
+            commit('setLeftText', { urn: leftTextUrn, metadata: text });
+          })
+          .catch((err) => {
+            commit('setError', { error: err.message });
+          }));
       }
       if (!state.leftPassage || state.leftPassage.urn.toString() !== leftUrn.toString()) {
         if (!initial) {
           dispatch('setSelectedToken', { token: null });
         }
         commit('setLeftPassageText', { text: null });
-        commit('setLeftPassage', { urn: leftUrn, ready: false, error: '' });
+        commit('setLeftPassage', {
+          urn: leftUrn,
+          ready: false,
+          error: '',
+          redirected: null,
+        });
         ps.push(sv.fetchPassage(leftUrn)
           .then((passage) => {
+            const urn = new URN(passage.urn);
             commit('setLeftPassageText', { text: passage.text_html });
             delete passage.text_html;
-            commit('setLeftPassage', { metadata: passage, ready: true });
+            commit('setLeftPassage', { urn });
+            if (leftUrn.reference !== urn.reference) {
+              commit('setLeftPassage', {
+                metadata: passage,
+                redirected: { previousUrn: leftUrn },
+                ready: true,
+              });
+              const { default: router } = require('../router'); // eslint-disable-line global-require
+              router.push({ name: 'reader', params: { leftUrn: urn.toString() }, query: rootState.route.query });
+            } else {
+              commit('setLeftPassage', { metadata: passage, ready: true });
+            }
           })
           .catch((err) => {
-            commit('setLeftPassage', { error: err.toString() });
+            commit('setError', { error: err.message });
           }));
       }
       if (rightUrn) {
         const rightTextUrn = rightUrn.upTo('version');
         if (!state.rightText || state.rightText.urn.toString() !== rightTextUrn.toString()) {
-          ps.push(sv.fetchCollection(rightTextUrn).then((text) => {
-            commit('setRightText', { urn: rightTextUrn, metadata: text });
-          }));
+          ps.push(sv.fetchCollection(rightTextUrn)
+            .then((text) => {
+              commit('setRightText', { urn: rightTextUrn, metadata: text });
+            })
+            .catch((err) => {
+              commit('setError', { error: err.message });
+            }));
         }
         if (!state.rightPassage || state.rightPassage.urn.toString() !== rightUrn.toString()) {
           commit('setRightPassageText', { text: null });
-          commit('setRightPassage', { urn: rightUrn, ready: false, error: '' });
+          commit('setRightPassage', {
+            urn: rightUrn,
+            ready: false,
+            error: '',
+            redirected: null,
+          });
           ps.push(sv.fetchPassage(rightUrn)
             .then((passage) => {
+              const urn = new URN(passage.urn);
               commit('setRightPassageText', { text: passage.text_html });
               delete passage.text_html;
-              commit('setRightPassage', { metadata: passage, ready: true });
+              commit('setRightPassage', { urn });
+              if (rightUrn.reference !== urn.reference) {
+                commit('setRightPassage', {
+                  metadata: passage,
+                  redirected: { previousUrn: rightUrn },
+                  ready: true,
+                });
+              } else {
+                commit('setRightPassage', { metadata: passage, ready: true });
+              }
             })
             .catch((err) => {
-              commit('setRightPassage', { error: err.toString() });
+              commit('setRightPassage', { error: err.message });
             }));
         }
       } else if (state.rightText) {
