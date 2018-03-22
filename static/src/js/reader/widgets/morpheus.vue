@@ -1,5 +1,5 @@
 <template>
-  <widget class="morpheus">
+  <widget class="morpheus" v-if="enabled">
     <span slot="header">Morpheus</span>
     <div slot="body">
       <text-loader v-if="loading" size="7px" margin="1px" />
@@ -34,7 +34,7 @@
         </div>
       </div>
       <p v-else-if="selectedWord" class="no-results">No results found.</p>
-      <p v-else class="instructions">In <span class="mode">HIGHLIGHT</span> text mode, select a word to get morphological analysis (Greek only).</p>
+      <p v-else class="instructions">In <span class="mode">HIGHLIGHT</span> text mode, select a word to get morphological analysis (Greek and Latin only).</p>
     </div>
   </widget>
 </template>
@@ -59,6 +59,9 @@ export default {
     };
   },
   computed: {
+    enabled() {
+      return this.text.metadata.lang === 'grc' || this.text.metadata.lang === 'lat';
+    },
     selectedWord() {
       const selectedWords = this.$store.getters['reader/selectedWords'];
       if (selectedWords.length === 0) {
