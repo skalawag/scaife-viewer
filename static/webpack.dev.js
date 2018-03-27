@@ -15,7 +15,41 @@ if (process.env.BUNDLE_ANALYZER === 'on') {
 
 module.exports = merge(common, {
   module: {
-    rules: utils.styleLoaders({ sourceMap: true }),
+    rules: [
+      {
+        test: /\.scss$/,
+        use: [
+          {
+            loader: 'style-loader',
+            options: {
+              sourceMap: true,
+              convertToAbsoluteUrls: true,
+            },
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+              includePaths: [
+                utils.resolve('src/scss'),
+              ],
+            },
+          },
+        ],
+      },
+    ],
   },
   devtool: 'eval-source-map',
   devServer: {

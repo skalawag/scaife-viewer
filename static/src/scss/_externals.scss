@@ -1,3 +1,4 @@
-@import "node_modules/bootstrap/scss/bootstrap";
-@import 'node_modules/font-awesome/scss/font-awesome';
-@import 'node_modules/loaders.css/src/loaders.scss';
+@import '~bootstrap/scss/bootstrap';
+$fa-font-path: '~font-awesome/fonts';
+@import '~font-awesome/scss/font-awesome';
+@import '~loaders.css/src/loaders.scss';

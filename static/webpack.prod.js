@@ -1,23 +1,47 @@
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const utils = require('./utils');
 
 const env = {
   NODE_ENV: '"production"',
 };
-const extractCss = new ExtractTextPlugin('css/app.css');
 
 module.exports = merge(common, {
   devtool: 'hidden-source-map',
   module: {
-    rules: utils.styleLoaders({ extracter: extractCss }),
+    rules: [
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'postcss-loader',
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              includePaths: [
+                utils.resolve('src/scss'),
+              ],
+            },
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': env,
     }),
-    extractCss,
+    new MiniCssExtractPlugin({
+      filename: 'css/site.css',
+    }),
+    new OptimizeCssAssetsPlugin(),
   ],
 });
