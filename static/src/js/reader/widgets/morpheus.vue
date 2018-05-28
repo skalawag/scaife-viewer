@@ -1,6 +1,6 @@
 <template>
-  <widget class="morpheus">
-    <span slot="header">Morpheus</span>
+  <widget class="morpheus" v-if="enabled">
+    <span slot="header">Morphology</span>
     <div slot="body">
       <text-loader v-if="loading" size="7px" margin="1px" />
       <div v-else-if="morphBody">
@@ -59,6 +59,9 @@ export default {
     };
   },
   computed: {
+    enabled() {
+      return this.text.metadata.lang === 'grc' || this.text.metadata.lang === 'lat';
+    },
     selectedWord() {
       const selectedWords = this.$store.getters['reader/selectedWords'];
       if (selectedWords.length === 0) {

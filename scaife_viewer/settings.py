@@ -18,8 +18,6 @@ ALLOWED_HOSTS = [
     "localhost",
     "scaife.perseus.org",
     "scaife-dev.perseus.org",
-    "scaife.eldarion.com",
-    "scaife-dev.eldarion.com",
 ]
 
 host_domain = os.environ.get("GONDOR_INSTANCE_DOMAIN")
@@ -295,4 +293,4 @@ OPENCENSUS_TRACE_PARAMS = {
     "BLACKLIST_PATHS": [],
 }
 
-ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
+ELASTICSEARCH_HOSTS = os.environ.get("ELASTICSEARCH_HOSTS", "localhost").split(",")
